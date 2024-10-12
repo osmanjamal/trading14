@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 
-	_ "github.com/lib/pq"
 	"github.com/osmanjamal/trading14/internal/config"
 )
 

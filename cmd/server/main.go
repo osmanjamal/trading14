@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,36 +17,31 @@ import (
 )
 
 func main() {
-	// تحميل التكوين
+	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("خطأ في تحميل التكوين: %v", err)
+		fmt.Printf("Error loading config: %v\n", err)
+		os.Exit(1)
 	}
 
-	// إعداد المسجل
-	logger := logger.New(cfg.LogLevel)
-	defer logger.Sync()
+	// Setup logger
+	log := logger.New(cfg.LogLevel)
+	defer log.Sync()
 
-	// الاتصال بقاعدة البيانات
+	// Connect to database
 	db, err := database.Connect(cfg.DatabaseURL)
 	if err != nil {
-		logger.Fatal("فشل الاتصال بقاعدة البيانات", "خطأ", err)
+		log.Fatal("Failed to connect to database", "error", err)
 	}
 	defer db.Close()
 
-	// اختبار الاتصال بقاعدة البيانات
-	if err = db.Ping(); err != nil {
-		logger.Fatal("فشل اختبار الاتصال بقاعدة البيانات", "خطأ", err)
-	}
-	logger.Info("تم الاتصال بقاعدة البيانات بنجاح")
+	// Setup exchange connection
+	exch := exchange.NewBinance(cfg.ExchangeAPIKey, cfg.ExchangeSecretKey)
 
-	// إعداد اتصال منصة التداول
-	exchange := exchange.NewBinance(cfg.ExchangeAPIKey, cfg.ExchangeSecretKey)
+	// Setup router and handlers
+	router := api.SetupRoutes(db, exch, log)
 
-	// إعداد الموجه والمعالجات
-	router := api.SetupRoutes(db, exchange, logger)
-
-	// إنشاء خادم HTTP
+	// Create HTTP server
 	srv := &http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      router,
@@ -55,26 +50,26 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// تشغيل الخادم في goroutine منفصلة
+	// Run server in a goroutine
 	go func() {
-		logger.Info("بدء تشغيل الخادم", "منفذ", cfg.Port)
+		log.Info("Starting server", "port", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatal("فشل الخادم", "خطأ", err)
+			log.Fatal("Server failed", "error", err)
 		}
 	}()
 
-	// إعداد قناة لإشارات إيقاف التشغيل
+	// Set up channel for shutdown signals
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	logger.Info("جاري إيقاف تشغيل الخادم...")
+	log.Info("Shutting down server...")
 
-	// إغلاق الخادم بشكل آمن
+	// Gracefully shutdown the server
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Fatal("تم إجبار الخادم على الإغلاق", "خطأ", err)
+		log.Fatal("Server forced to shutdown", "error", err)
 	}
 
-	logger.Info("تم إيقاف تشغيل الخادم بنجاح")
+	log.Info("Server exiting")
 }
