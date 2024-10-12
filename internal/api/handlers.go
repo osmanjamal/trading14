@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/osmanjamal/trading12/internal/bot"
-	"github.com/osmanjamal/trading12/internal/database"
-	"github.com/osmanjamal/trading12/internal/exchange"
-	"github.com/osmanjamal/trading12/pkg/logger"
+	"github.com/osmanjamal/trading14/internal/bot"
+	"github.com/osmanjamal/trading14/internal/database"
+	"github.com/osmanjamal/trading14/internal/exchange"
+	"github.com/osmanjamal/trading14/pkg/logger"
 )
 
 type Handlers struct {

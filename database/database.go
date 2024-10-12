@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	_ "github.com/lib/pq"
-	"github.com/osmanjamal/trading12/internal/config"
+	"github.com/osmanjamal/trading14/internal/config"
 )
 
 func Connect(cfg *config.Config) (*sql.DB, error) {

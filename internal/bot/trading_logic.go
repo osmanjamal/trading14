@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"github.com/osmanjamal/trading12/internal/exchange"
+	"github.com/osmanjamal/trading14/internal/exchange"
 )
 
 func ExecuteTrade(symbol string, action string, price float64, amount float64, exchange exchange.Exchange) error {

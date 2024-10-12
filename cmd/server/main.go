@@ -9,11 +9,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/osmanjamal/trading12/internal/api"
-	"github.com/osmanjamal/trading12/internal/config"
-	"github.com/osmanjamal/trading12/internal/database"
-	"github.com/osmanjamal/trading12/internal/exchange"
-	"github.com/osmanjamal/trading12/pkg/logger"
+	"github.com/osmanjamal/trading14/internal/api"
+	"github.com/osmanjamal/trading14/internal/config"
+	"github.com/osmanjamal/trading14/internal/database"
+	"github.com/osmanjamal/trading14/internal/exchange"
+	"github.com/osmanjamal/trading14/pkg/logger"
 )
 
 func main() {
