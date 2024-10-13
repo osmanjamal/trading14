@@ -1,20 +1,19 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/osmanjamal/trading14/pkg/database" // قاعدة البيانات
-	"github.com/osmanjamal/trading14/pkg/logger"   // اللوجر
-	"github.com/osmanjamal/trading14/pkg/models"   // الموديلات
+	"github.com/osmanjamal/trading14/internal/database"
+	"github.com/osmanjamal/trading14/internal/models"
+	"github.com/osmanjamal/trading14/pkg/logger"
 )
 
 func InitDB() {
-	err := database.Connect() // استدعاء الاتصال بقاعدة البيانات من pkg/database
+	err := database.Connect()
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		logger.Error("Failed to connect to database", err)
 	}
 }
 
@@ -22,7 +21,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID := vars["id"]
 
-	user, err := database.GetUserByID(userID) // الاتصال بقاعدة البيانات
+	user, err := database.GetUserByID(userID)
 	if err != nil {
 		logger.Error("Error fetching user data", err)
 		http.Error(w, "User not found", http.StatusNotFound)

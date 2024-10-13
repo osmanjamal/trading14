@@ -3,16 +3,20 @@ package database
 import (
 	"database/sql"
 
-	_ "github.com/lib/pq" // driver for PostgreSQL
+	_ "github.com/lib/pq"
 )
 
-func Connect(databaseURL string) (*DB, error) {
-	db, err := sql.Open("postgres", databaseURL)
+var db *sql.DB
+
+func Connect() error {
+	var err error
+	db, err = sql.Open("postgres", "your_connection_string_here")
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	return NewDB(db), nil
+	return db.Ping()
+}
+
+func GetDB() *sql.DB {
+	return db
 }
