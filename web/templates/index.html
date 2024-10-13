@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Bot Dashboard</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-</head>
-<body>
-    <h1>Trading Bot Dashboard</h1>
-    <div id="trades"></div>
-    <div id="balance"></div>
-    <script src="/static/js/app.js"></script>
-</body>
-</html>
+{{define "content"}}
+<h2>Welcome to Trading Bot</h2>
+<p>This is your central dashboard for managing your trading bots and viewing market data.</p>
+<div class="dashboard-summary">
+    <div class="summary-card">
+        <h3>Active Bots</h3>
+        <p id="active-bots-count">Loading...</p>
+    </div>
+    <div class="summary-card">
+        <h3>Total Trades</h3>
+        <p id="total-trades-count">Loading...</p>
+    </div>
+    <div class="summary-card">
+        <h3>Current Balance</h3>
+        <p id="current-balance">Loading...</p>
+    </div>
+</div>
+{{end}}

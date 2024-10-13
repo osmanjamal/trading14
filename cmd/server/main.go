@@ -2,74 +2,84 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/osmanjamal/trading14/internal/api"
 	"github.com/osmanjamal/trading14/internal/config"
 	"github.com/osmanjamal/trading14/internal/database"
-	"github.com/osmanjamal/trading14/internal/exchange"
 	"github.com/osmanjamal/trading14/pkg/logger"
 )
 
 func main() {
-	// Load configuration
+	// تحميل التكوين
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Printf("Error loading config: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Error loading config: %v", err)
 	}
 
-	// Setup logger
-	log := logger.New(cfg.LogLevel)
-	defer log.Sync()
+	// إنشاء المسجل
+	logger := logger.New(cfg.LogLevel)
+	defer logger.Sync()
 
-	// Connect to database
+	// الاتصال بقاعدة البيانات
 	db, err := database.Connect(cfg.DatabaseURL)
 	if err != nil {
-		log.Fatal("Failed to connect to database", "error", err)
+		logger.Fatal("Failed to connect to database", "error", err)
 	}
 	defer db.Close()
 
-	// Setup exchange connection
-	exch := exchange.NewBinance(cfg.ExchangeAPIKey, cfg.ExchangeSecretKey)
+	// إنشاء الراوتر
+	r := mux.NewRouter()
 
-	// Setup router and handlers
-	router := api.SetupRoutes(db, exch, log)
+	// إنشاء معالجات API
+	handlers := api.NewHandlers(db, logger)
 
-	// Create HTTP server
+	// إعداد مسارات API
+	r.HandleFunc("/api/bots", handlers.GetBots).Methods("GET")
+	r.HandleFunc("/api/bots/{id}", handlers.GetBot).Methods("GET")
+	r.HandleFunc("/api/bots", handlers.CreateBot).Methods("POST")
+	r.HandleFunc("/api/bots/{id}", handlers.UpdateBot).Methods("PUT")
+	r.HandleFunc("/api/bots/{id}", handlers.DeleteBot).Methods("DELETE")
+	r.HandleFunc("/api/bots/{id}/start", handlers.StartBot).Methods("POST")
+	r.HandleFunc("/api/bots/{id}/stop", handlers.StopBot).Methods("POST")
+	r.HandleFunc("/api/trades", handlers.GetTrades).Methods("GET")
+	r.HandleFunc("/api/bots/{id}/trades", handlers.GetBotTrades).Methods("GET")
+
+	// إنشاء خادم HTTP
 	srv := &http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      router,
+		Handler:      r,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// Run server in a goroutine
+	// تشغيل الخادم في goroutine منفصلة
 	go func() {
-		log.Info("Starting server", "port", cfg.Port)
+		logger.Info("Starting server", "port", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal("Server failed", "error", err)
+			logger.Fatal("Server failed", "error", err)
 		}
 	}()
 
-	// Set up channel for shutdown signals
+	// إعداد قناة لإشارات الإيقاف
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Info("Shutting down server...")
+	logger.Info("Shutting down server...")
 
-	// Gracefully shutdown the server
+	// إغلاق الخادم بشكل آمن
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown", "error", err)
+		logger.Fatal("Server forced to shutdown", "error", err)
 	}
 
-	log.Info("Server exiting")
+	logger.Info("Server exiting")
 }

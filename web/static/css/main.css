@@ -6,11 +6,37 @@ body {
     background-color: #f4f4f4;
 }
 
-h1 {
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+}
+
+h1, h2, h3 {
     color: #333;
 }
 
-#trades, #balance {
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+
+#trades, #balance, .summary-card, .chart-container, .documentation-content, #settings-form {
     background-color: #fff;
     padding: 20px;
     margin-bottom: 20px;
@@ -31,4 +57,66 @@ th, td {
 
 th {
     background-color: #f2f2f2;
+}
+
+button, input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #555;
+}
+
+input[type="text"], input[type="password"], select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.dashboard-summary {
+    display: flex;
+    justify-content: space-between;
+}
+
+.summary-card {
+    flex: 1;
+    margin: 0 10px;
+    text-align: center;
+}
+
+.chart-container {
+    height: 400px;
+}
+
+.documentation-content h3 {
+    margin-top: 20px;
+}
+
+.documentation-content ul, .documentation-content ol {
+    margin-left: 20px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .dashboard-summary {
+        flex-direction: column;
+    }
+    
+    .summary-card {
+        margin: 10px 0;
+    }
 }

@@ -1,0 +1,19 @@
+{{define "content"}}
+<h2>Settings</h2>
+<form id="settings-form">
+    <label for="exchange-api-key">Exchange API Key:</label>
+    <input type="text" id="exchange-api-key" name="exchange-api-key">
+    
+    <label for="exchange-secret-key">Exchange Secret Key:</label>
+    <input type="password" id="exchange-secret-key" name="exchange-secret-key">
+    
+    <label for="risk-level">Risk Level:</label>
+    <select id="risk-level" name="risk-level">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
+    
+    <button type="submit">Save Settings</button>
+</form>
+{{end}}

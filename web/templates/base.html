@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bot Dashboard</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <header>
+        <h1>Trading Bot Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/bots">Bots</a></li>
+                <li><a href="/trades">Trades</a></li>
+                <li><a href="/settings">Settings</a></li>
+                <li><a href="/analytics">Analytics</a></li>
+                <li><a href="/documentation">Documentation</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {{template "content" .}}
+    </main>
+    <footer>
+        <p>&copy; 2023 Trading Bot. All rights reserved.</p>
+    </footer>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
