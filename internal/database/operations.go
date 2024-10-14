@@ -20,22 +20,3 @@ func (db *DB) LogTrade(symbol string, action string, price float64, amount float
     `, symbol, action, price, amount, time.Now())
 	return err
 }
-
-func (db *DB) GetTrades() ([]Trade, error) {
-	rows, err := db.Query("SELECT id, symbol, action, price, amount, timestamp FROM trades ORDER BY timestamp DESC LIMIT 100")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var trades []Trade
-	for rows.Next() {
-		var t Trade
-		err := rows.Scan(&t.ID, &t.Symbol, &t.Action, &t.Price, &t.Amount, &t.Timestamp)
-		if err != nil {
-			return nil, err
-		}
-		trades = append(trades, t)
-	}
-	return trades, nil
-}
